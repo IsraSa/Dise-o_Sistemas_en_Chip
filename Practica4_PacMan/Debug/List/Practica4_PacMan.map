@@ -1,0 +1,33 @@
+RAM Allocation [bytes]
+Variable                                                                          Address   Size
+------------------------------------------------------------------------------------------------
+cursor                                                                            0x0300       1
+PacMan1                                                                           0x0301       8
+PacMan2                                                                           0x0309       8
+PacMan3                                                                           0x0311       8
+PacMan4                                                                           0x0319       8
+i                                                                                 0x0321       1
+j                                                                                 0x0322       1
+
+EEPROM Allocation [bytes]
+Variable                                                                          Address   Size
+------------------------------------------------------------------------------------------------
+
+Register Allocation
+Variable                                                                          Register  Size
+------------------------------------------------------------------------------------------------
+
+FLASH Allocation [words]
+Function                                                                          Address   Size
+------------------------------------------------------------------------------------------------
+SetupLCD                                                                          0x0009A     43
+PulseEn                                                                           0x000C5      3
+SendDataBitsLCD                                                                   0x000C8     23
+WriteComandLCD                                                                    0x000DF      5
+CharLCD                                                                           0x000E4     27
+StringLCD                                                                         0x000FF     20
+MoveCursor                                                                        0x00113     36
+CreateChar                                                                        0x00137     28
+read_adc                                                                          0x00153     27
+main                                                                              0x0016E    175
+delayPacMan                                                                       0x0021D      6

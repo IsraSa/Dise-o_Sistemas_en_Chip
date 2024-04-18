@@ -1,0 +1,143 @@
+/*
+ * Practica4_PacMan.c
+ *
+ * Created: 14/04/2024 04:21:21 p. m.
+ * Author: Israel Sandoval Sánchez
+ *         Guadalupe Paulina López Cuevas
+ *         José Alberto Aguiler Sánchez
+ */
+
+        #asm
+        .equ __lcd_port=0x0b
+        .equ __lcd_EN=3
+        .equ __lcd_RS=2
+        .equ __lcd_D4=4
+        .equ __lcd_D5=5
+        .equ __lcd_D6=6
+        .equ __lcd_D7=7
+       #endasm
+
+#include <mega328p.h>
+#include <delay.h>
+#include <display.h>
+#include <stdio.h>
+
+unsigned char PacMan1[8] = { 0x0E,0x1D,0x1F,0x1E,0x1F,0x1F,0x0E,0x00}; // Pac Man con boca cerrada derecha
+unsigned char PacMan2[8] = { 0x0E,0x1D,0x1E,0x18,0x1C,0x1F,0x0E,0x00}; // Pac Man con boca abierta derecha
+unsigned char PacMan3[8] = { 0x0E,0x17,0x1F,0x0F,0x1F,0x1F,0x0E,0x00}; // Pac Man con boca cerrada izquierda
+unsigned char PacMan4[8] = { 0x0E,0x17,0x0F,0x03,0x07,0x1F,0x0E,0x00}; // Pac Man con boca abierta izquierda
+
+signed char i, j;
+
+// Copiar de la línea de la 7 a la 24, del code Wizard
+
+// ADC Voltage Reference: AVCC pin
+#define ADC_VREF_TYPE ((0<<REFS1) | (1<<REFS0) | (1<<ADLAR))
+
+// Read the 8 most significant bits
+// of the AD conversion result
+// Read Voltage=read_adc*(Vref/256.0)
+unsigned char read_adc(unsigned char adc_input)
+{
+ADMUX=adc_input | ADC_VREF_TYPE;
+// Delay needed for the stabilization of the ADC input voltage
+delay_us(10);
+// Start the AD conversion
+ADCSRA|=(1<<ADSC);
+// Wait for the AD conversion to complete
+while ((ADCSRA & (1<<ADIF))==0);
+ADCSRA|=(1<<ADIF);
+return ADCH;
+}
+
+void delayPacMan();
+
+
+void main(void)
+{
+    // Verifirico apoyandonos del code Wizard, linea de la 141 a la 150
+    // ADC initialization
+    // ADC Clock frequency: 500.000 kHz
+    // ADC Auto Trigger Source: Software
+    // Only the 8 most significant bits of
+    // the AD conversion result are used
+    ADCSRA=(1<<ADEN) | (0<<ADSC) | (0<<ADATE) | (0<<ADIF) | (0<<ADIE) | (0<<ADPS2) | (0<<ADPS1) | (1<<ADPS0);
+    ADCSRB=(0<<ADTS2) | (0<<ADTS1) | (0<<ADTS0);
+    // Digital input buffers on ADC0: Off, ADC1: On, ADC2: On, ADC3: On
+    // ADC4: On, ADC5: On
+    DIDR0=(0<<ADC5D) | (0<<ADC4D) | (0<<ADC3D) | (0<<ADC2D) | (0<<ADC1D) | (1<<ADC0D);
+
+    SetupLCD();
+    CreateChar(0, PacMan1); // Pac Man boca cerrada derecha
+    CreateChar(1, PacMan2); // Pac Man boca abierta derecha
+    CreateChar(2, PacMan3); // Pac Man boca cerrada izquierda
+    CreateChar(3, PacMan4); // Pac Man boca abierta izaquierda
+    PORTC.1 = 1; // Habilita la resistencia de pull-up del boton PC1
+while (1)
+    {   // Mensaje que se comerá el PacMan
+        MoveCursor(3,0);
+        StringLCD("H E L L O");
+        MoveCursor(3,1);
+        StringLCD("Mr. PacMan");
+   do
+   {    // Cambios de línea del PacMan
+    if (i == 16 && j == 0){
+        j = 1;
+        i = 15;
+    } else if (i < 0 && j == 1){
+        j = 0;
+        i = 0;
+    } else if (i < 0 && j == 0){
+        i = 0;
+        j = 1;
+    } else if (i == 16 && j == 1){
+        i = 15;
+        j = 0;
+    }   
+    if (PINC.1 == 0 && j == 0){         // Movimiento del PacMan izquierda a derecha arriba
+        MoveCursor(i,j);
+        CharLCD(1);
+        delayPacMan();
+        MoveCursor(i,j);
+        CharLCD(0);
+        delayPacMan();
+        MoveCursor(i,j);
+        CharLCD(' ');
+        i++;
+    } else if (PINC.1 == 0 && j == 1){ // Movimiento del pac Man derecha a izquierda abajo
+        MoveCursor(i,j);
+        CharLCD(3);
+        delayPacMan();
+        MoveCursor(i,j);
+        CharLCD(2);
+        delayPacMan();
+        MoveCursor(i,j);
+        CharLCD(' ');
+        i--;
+    } else if (PINC.1 == 1 && j == 0){  // Movimiento del PacMan derecha a izquierda arriba
+        MoveCursor(i,j);
+        CharLCD(3);
+        delayPacMan();
+        MoveCursor(i,j);
+        CharLCD(2);
+        delayPacMan();
+        MoveCursor(i,j);
+        CharLCD(' ');
+        i--;
+    } else if (PINC.1 == 1 && j == 1){ // Movimiento del PacMan izquierda a derecha abajo
+        MoveCursor(i,j);
+        CharLCD(1);
+        delayPacMan();
+        MoveCursor(i,j);
+        CharLCD(0);
+        delayPacMan();
+        MoveCursor(i,j);
+        CharLCD(' ');
+        i++;
+    }
+   } while (i<16 && i>=0);
+ }
+}
+void delayPacMan(){         // Función para la velocidad del PacMan
+    delay_ms(read_adc(0));
+}
