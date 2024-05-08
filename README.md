@@ -7,7 +7,4 @@ Equipo 2:
 - José Alberto Aguilar Sánchez
 - Guadalupe Paulina López Cuevas
 
-Profesores:
-- Agustín   (Microcontroladores)
-- Josue     (Robot 3pi)
-- Pedro     (Linux)
+
