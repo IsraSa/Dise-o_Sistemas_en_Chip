@@ -15,10 +15,10 @@ Motors motors;
 Encoders encoders;
 
 uint16_t sensorValues[5]; // Array para guardar los valores de los sensores
-uint8_t muestras = 300; // Numero de muestras para calibrar
-uint16_t cal_speed = 50; // Velocidad de calibracion
+uint8_t muestras = 350; // Numero de muestras para calibrar
+uint16_t cal_speed = 80; // Velocidad de calibracion
 uint16_t prediccion = 0; // Valor de prediccion
-uint16_t speed = 130; // Velocidad de seguimiento
+uint16_t speed = 150; // Velocidad de seguimiento
 int follow = 0;
 int opcion = 0;
 int select = 0;
@@ -77,7 +77,12 @@ void calibracion(){
   display.clear(); // Limpiar la pantalla
   display.print("Calibrando..."); // Mostrar mensaje de calibracion
   display.display(); // Actualizar la pantalla
-  for (int i = 0; i < muestras; i++){
+  for (int i = 0; i < muestras/2 ; i++){
+    lineSensors.calibrate(); // Calibrar los sensores de linea
+    delay(25);
+  }
+ motors.setSpeeds(-cal_speed, cal_speed); // Mover el robot a la velocidad de calibracion 
+  for (int i = muestras/2; i < muestras ; i++){
     lineSensors.calibrate(); // Calibrar los sensores de linea
     delay(25);
   }
@@ -102,23 +107,23 @@ void startMode(){
   }  
 
   if (follow == 1){
-    if (prediccion <= 2200 and prediccion > 1800){
-      motors.setSpeeds(speed, speed);
+    if (prediccion <=1950 and prediccion > 1650){
+      motors.setSpeeds(speed , speed);
     }
-    else if (prediccion <=2600 and prediccion > 2200){
+    else if (prediccion <=2300 and prediccion > 1950){
       sum = prediccion - 2200;
-      sum = (sum / 50 )*10;
-      motors.setSpeeds(speed + sum, speed);
+      sum = (sum / 50 )*5;
+      motors.setSpeeds(speed + sum, speed-sum);
     }
-    else if(prediccion <= 1800 and prediccion > 1400){
+    else if(prediccion <= 1650 and prediccion > 1300){
       sum = 1800 - prediccion;
-      sum = (sum / 500 )*10;
-      motors.setSpeeds(speed, speed + sum);
-    }else if (prediccion > 2600){
-      motors.setSpeeds(speed + 80, speed - 90);
+      sum = (sum / 50 )*5;
+      motors.setSpeeds(speed-sum, speed + sum);
+    }else if (prediccion > 2300){
+      motors.setSpeeds(speed -5 , speed - 80);
     }
-    else if (prediccion <= 1400){
-      motors.setSpeeds(speed - 90 , speed + 80);{}
+    else if (prediccion <= 1300){
+      motors.setSpeeds(speed - 80 , speed -5);
     }
   }else{
     motors.setSpeeds(0,0);
@@ -140,5 +145,5 @@ void startMode(){
   display.print("Prediccion: "); // Mostrar el valor de prediccion
   display.gotoXY(0, 6); // Mover el cursor a la fila 6
   display.print(prediccion); // Mostrar el valor de prediccion
-  display.display(); // Actualizar la pantalla
+  display.display(); // Actualizar la pantalla
 }
