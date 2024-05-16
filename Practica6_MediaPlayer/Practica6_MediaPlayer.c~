@@ -1,0 +1,17 @@
+/*
+ * Practica6_MediaPlayer.c
+ *
+ * Created: 15/05/2024 07:30:01 p. m.
+ * Author: Samsung
+ */
+
+#include <mega328p.h>
+
+void main(void)
+{
+while (1)
+    {
+    // Please write your application code here
+
+    }
+}
