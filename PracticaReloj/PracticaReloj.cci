@@ -1,0 +1,13 @@
+VERSION:3 SOURCE_TIMESTAMP:58B194BC
+NODE:I LEVEL:0 LINE:18 "C:\cvavreval\inc\stdio.h"
+NODE:I LEVEL:0 LINE:19 "C:\cvavreval\inc\io.h"
+NODE:I LEVEL:0 LINE:20 "C:\cvavreval\inc\delay.h"
+NODE:I LEVEL:0 LINE:21 "C:\cvavreval\inc\display.h"
+NODE:V LEVEL:0 LINE:23 "i -> RAM:????"
+NODE:V LEVEL:0 LINE:24 "H -> RAM:????"
+NODE:V LEVEL:0 LINE:24 "M -> RAM:????"
+NODE:V LEVEL:0 LINE:24 "S -> RAM:????"
+NODE:V LEVEL:0 LINE:25 "Cadena -> RAM:????"
+NODE:F LEVEL:0 LINE:30 "main(void)"
+NODE:F LEVEL:0 LINE:90 "tono(float frec)"
+NODE:F LEVEL:0 LINE:105 "noTono(void)"
