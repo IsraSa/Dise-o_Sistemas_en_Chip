@@ -18,7 +18,7 @@ uint16_t sensorValues[5]; // Array para guardar los valores de los sensores
 uint8_t muestras = 350; // Numero de muestras para calibrar
 uint16_t cal_speed = 80; // Velocidad de calibracion
 uint16_t prediccion = 0; // Valor de prediccion
-uint16_t speed = 30; // Velocidad de seguimiento
+uint16_t speed = 100; // Velocidad de seguimiento
 uint16_t posibilidades[3] = {0,0,0}; // Posibilidades
 int follow = 0;
 int opcion = 0;
@@ -60,31 +60,25 @@ void camino(){
   if(opcion == 0){
     lineSensors.readLineBlack(sensorValues); // Leer el valor de prediccion
     //  IZQ
-      if(sensorValues[0] > 400){
+      if(sensorValues[0] > 100){
         display.gotoXY(0,4);
         display.print("IZQ");
-        display.gotoXY(0,5);
-        display.print(sensorValues[0]);
         posibilidades[0] = 1;
       }else{
         posibilidades[0] = 0;
       }
     // DER
-      if(sensorValues[4] > 400){
+      if(sensorValues[4] > 100){
         display.gotoXY(18,4);
         display.print("DER");
-        display.gotoXY(18,5);
-        display.print(sensorValues[4]);
         posibilidades[2] = 1;
       }else{
         posibilidades[2] = 0;
       }
     // FORW
-      if(sensorValues[2] > 400){
+      if(sensorValues[2] > 100){
         display.gotoXY(10,0);
         display.print("FORW");
-        display.gotoXY(11,1);
-        display.print(sensorValues[2]);
         posibilidades[1] = 1;
       }else{
         posibilidades[1] = 0;
@@ -122,6 +116,12 @@ void camino(){
       posibilidades[1] = 0;
     }
   } 
+  display.gotoXY(0,5);
+  display.print(sensorValues[0]);
+  display.gotoXY(18,5);
+  display.print(sensorValues[4]);
+  display.gotoXY(11,1);
+  display.print(sensorValues[2]);
   display.gotoXY(7, 7);
   sprintf(buffer, "(%d, %d, %d)", posibilidades[0], posibilidades[1], posibilidades[2]);
   display.print(buffer);
@@ -209,10 +209,7 @@ void startMode(){
     motors.setSpeeds(0,0);
     if(follow == 1 && ajuste ==1){
       delay(500);
-      //start_dist();
-      motors.setSpeeds(30,30);
-      delay(100);
-      motors.setSpeeds(0,0);
+      start_dist();
       ruta();
       ajuste = 0;
     }
@@ -222,11 +219,13 @@ void startMode(){
   display.display();
 }
 
-/*void start_dist(){
+void start_dist(){
   float dist_actual = 0; // Distancia actual
   float pos_left = 0;
   float pos_right = 0;
-  while (dist_actual <1)
+  encoders.getCountsAndResetLeft();
+  encoders.getCountsAndResetRight();
+  while (dist_actual <0.6)
   {
     pos_left = float(encoders.getCountsAndResetLeft()); // Se obtiene la posición del motor izquierdo y se reinicia el contador 
     pos_left *= (1/12.0); // Se convierte la posición a vueltas (1 vuelta = 12 pulsos)
@@ -236,18 +235,31 @@ void startMode(){
     pos_right = float(encoders.getCountsAndResetRight()) * (1/12.0) * (1/29.86) * (10.0531); // Se obtiene la posición del motor derecho y se reinicia el contador
     // Calcular la ditancia actual
     dist_actual = dist_actual + ((pos_right + pos_left)/2);
-    motors.setSpeeds(speed, speed);
+    motors.setSpeeds(speed-30, speed-30);
   }
   motors.setSpeeds(0, 0);
-}*/
+}
 
 // Decide a donde se va a mover dependiendo de los caminos posibles
 
 void ruta(){
   if(posibilidades[0] == 1 && posibilidades[2] == 1){
-    start_ang(80,30,-30);
+    start_ang(80,40,-40);
   }
-  
+  else if(posibilidades[2] == 1){
+    start_ang(80,40,-40);
+  }
+  else if(posibilidades[0] == 1){
+    if(posibilidades[1] == 1){
+      start_dist();
+    }
+    else{
+      start_ang(80,-40,40);
+    }
+  }
+  else if(posibilidades[0] == 0 && posibilidades[1] == 0 posibilidades[2] == 0){
+    start_ang(170,40,-40);
+  }
 }
 
 void start_ang(int angulo, int izq, int der){
@@ -257,7 +269,8 @@ void start_ang(int angulo, int izq, int der){
   float radio = 1.6; // Radio de las ruedas
   float len = 8.8; // Longitud entre ruedas
   float error;
-
+  encoders.getCountsAndResetLeft();
+  encoders.getCountsAndResetRight();
   while (ang_actual < angulo)
   {
     pos_left = float(encoders.getCountsAndResetLeft()); // Se obtiene la posición del motor izquierdo y se reinicia el contador 
@@ -267,7 +280,12 @@ void start_ang(int angulo, int izq, int der){
     //pos_right = encoders.getCountsRight(); // Se obtiene la posición del motor derecho
     pos_right = float(encoders.getCountsAndResetRight()) * (1/12.0) * (1/29.86) * (360.0/1.0); // Se obtiene la posición del motor derecho y se reinicia el contador
     // Calcular el ángulo de giro
-    ang_actual = ang_actual + (radio*((pos_right - pos_left)/len)); // Se calcula el ángulo de giro en grados
+    if(izq > 0){
+      ang_actual = ang_actual + (radio*((pos_left - pos_right)/len)); // Se calcula el ángulo de giro en grados
+    }
+    else{
+      ang_actual = ang_actual + (radio*((pos_right - pos_left)/len)); // Se calcula el ángulo de giro en grados
+    }
     error = angulo - ang_actual; // Se calcula el error
     if (error > 2){
       motors.setSpeeds(izq,der); // Se gira a la derecha
