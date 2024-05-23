@@ -32,6 +32,7 @@ void startMode();
 void caminos();
 void startMode();
 void start_dist();
+void ruta();
 
 void setup() {
   display.setLayout21x8(); // Configuracion de la pantalla OLED
@@ -49,7 +50,7 @@ void loop() {
   startMode();
 
 }
-
+// Nos muestra si los sensores han encontrado un posible camino
 void camino(){
   char buffer[10];
   display.noAutoDisplay();
@@ -57,39 +58,69 @@ void camino(){
 
   if(opcion == 0){
     lineSensors.readLineBlack(sensorValues); // Leer el valor de prediccion
+    //  IZQ
+      if(sensorValues[0] < 400){
+        display.gotoXY(0,4);
+        display.print("IZQ");
+        display.gotoXY(0,5);
+        display.print(sensorValues[0]);
+        posibilidades[0] = 1;
+      }else{
+        posibilidades[0] = 0;
+      }
+    // DER
+      if(sensorValues[4] < 400){
+        display.gotoXY(18,4);
+        display.print("DER");
+        display.gotoXY(18,5);
+        display.print(sensorValues[4]);
+        posibilidades[2] = 1;
+      }else{
+        posibilidades[2] = 0;
+      }
+    // FORW
+      if(sensorValues[2] < 400){
+        display.gotoXY(10,0);
+        display.print("FORW");
+        display.gotoXY(11,1);
+        display.print(sensorValues[2]);
+        posibilidades[1] = 1;
+      }else{
+        posibilidades[1] = 0;
+      }
   }else{
     lineSensors.readLineWhite(sensorValues); // Leer el valor de prediccion
+    //  IZQ
+    if(sensorValues[0] < 400){
+      display.gotoXY(0,4);
+      display.print("IZQ");
+      display.gotoXY(0,5);
+      display.print(sensorValues[0]);
+      posibilidades[0] = 1;
+    }else{
+      posibilidades[0] = 0;
+    }
+  // DER
+    if(sensorValues[4] < 400){
+      display.gotoXY(18,4);
+      display.print("DER");
+      display.gotoXY(18,5);
+      display.print(sensorValues[4]);
+      posibilidades[2] = 1;
+    }else{
+      posibilidades[2] = 0;
+    }
+  // FORW
+    if(sensorValues[2] < 400){
+      display.gotoXY(10,0);
+      display.print("FORW");
+      display.gotoXY(11,1);
+      display.print(sensorValues[2]);
+      posibilidades[1] = 1;
+    }else{
+      posibilidades[1] = 0;
+    }
   } 
-//  IZQ
-  if(sensorValues[0] < 400){
-    display.gotoXY(0,4);
-    display.print("IZQ");
-    display.gotoXY(0,5);
-    display.print(sensorValues[0]);
-    posibilidades[0] = 1;
-  }else{
-    posibilidades[0] = 0;
-  }
-// DER
-  if(sensorValues[4] < 400){
-    display.gotoXY(18,4);
-    display.print("DER");
-    display.gotoXY(18,5);
-    display.print(sensorValues[4]);
-    posibilidades[2] = 1;
-  }else{
-    posibilidades[2] = 0;
-  }
-// FORW
-  if(sensorValues[2] < 400){
-    display.gotoXY(10,0);
-    display.print("FORW");
-    display.gotoXY(11,1);
-    display.print(sensorValues[2]);
-    posibilidades[1] = 1;
-  }else{
-    posibilidades[1] = 0;
-  }
   display.gotoXY(7, 7);
   sprintf(buffer, "(%d, %d, %d)", posibilidades[0], posibilidades[1], posibilidades[2]);
   display.print(buffer);
@@ -176,8 +207,11 @@ void startMode(){
   else{
     motors.setSpeeds(0,0);
     if(follow == 1 && ajuste ==1){
-      delay(1000);
-      start_dist();
+      delay(500);
+      //start_dist();
+      motors.setSpeeds(30,30);
+      delay(100);
+      motors.setSpeeds(0,0);
       ajuste = 0;
     }
   }
@@ -186,7 +220,7 @@ void startMode(){
   display.display();
 }
 
-void start_dist(){
+/*void start_dist(){
   float dist_actual = 0; // Distancia actual
   float pos_left = 0;
   float pos_right = 0;
@@ -203,8 +237,9 @@ void start_dist(){
     motors.setSpeeds(speed, speed);
   }
   motors.setSpeeds(0, 0);
-}
+}*/
 
+// Decide a donde se va a mover dependiendo de los caminos posibles
 
 
 
