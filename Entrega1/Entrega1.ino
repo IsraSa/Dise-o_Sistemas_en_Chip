@@ -213,6 +213,7 @@ void startMode(){
       motors.setSpeeds(30,30);
       delay(100);
       motors.setSpeeds(0,0);
+      ruta();
       ajuste = 0;
     }
   }
@@ -244,7 +245,7 @@ void startMode(){
 
 void ruta(){
   if(posibilidades[0] == 1 && posibilidades[2] == 1){
-
+    start_ang(80,30,-30);
   }
   
 }
