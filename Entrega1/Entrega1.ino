@@ -33,6 +33,7 @@ void caminos();
 void startMode();
 void start_dist();
 void ruta();
+void start_ang(int, int, int);
 
 void setup() {
   display.setLayout21x8(); // Configuracion de la pantalla OLED
@@ -59,7 +60,7 @@ void camino(){
   if(opcion == 0){
     lineSensors.readLineBlack(sensorValues); // Leer el valor de prediccion
     //  IZQ
-      if(sensorValues[0] < 400){
+      if(sensorValues[0] > 400){
         display.gotoXY(0,4);
         display.print("IZQ");
         display.gotoXY(0,5);
@@ -69,7 +70,7 @@ void camino(){
         posibilidades[0] = 0;
       }
     // DER
-      if(sensorValues[4] < 400){
+      if(sensorValues[4] > 400){
         display.gotoXY(18,4);
         display.print("DER");
         display.gotoXY(18,5);
@@ -79,7 +80,7 @@ void camino(){
         posibilidades[2] = 0;
       }
     // FORW
-      if(sensorValues[2] < 400){
+      if(sensorValues[2] > 400){
         display.gotoXY(10,0);
         display.print("FORW");
         display.gotoXY(11,1);
@@ -240,6 +241,55 @@ void startMode(){
 }*/
 
 // Decide a donde se va a mover dependiendo de los caminos posibles
+
+void ruta(){
+  if(posibilidades[0] == 1 && posibilidades[2] == 1){
+
+  }
+  
+}
+
+void start_ang(int angulo, int izq, int der){
+  float ang_actual = 0; // Distancia actual
+  float pos_left = 0;
+  float pos_right = 0;
+  float radio = 1.6; // Radio de las ruedas
+  float len = 8.8; // Longitud entre ruedas
+  float error;
+
+  while (ang_actual < angulo)
+  {
+    pos_left = float(encoders.getCountsAndResetLeft()); // Se obtiene la posición del motor izquierdo y se reinicia el contador 
+    pos_left *= (1/12.0); // Se convierte la posición a vueltas (1 vuelta = 12 pulsos)
+    pos_left *= (1/29.86); // Se convierte la posición de vultas de motor a vueltas de rueda (1 vuelta de motor = 29.86 vueltas de rueda)
+    pos_left *= (360.0/1.0); // Se convierte de revoluciones de la rueda a grados (1 revolución = 360 grados)
+    //pos_right = encoders.getCountsRight(); // Se obtiene la posición del motor derecho
+    pos_right = float(encoders.getCountsAndResetRight()) * (1/12.0) * (1/29.86) * (360.0/1.0); // Se obtiene la posición del motor derecho y se reinicia el contador
+    // Calcular el ángulo de giro
+    ang_actual = ang_actual + (radio*((pos_right - pos_left)/len)); // Se calcula el ángulo de giro en grados
+    error = angulo - ang_actual; // Se calcula el error
+    if (error > 2){
+      motors.setSpeeds(izq,der); // Se gira a la derecha
+    }
+    else{
+      motors.setSpeeds(0, 0); // No hace nada
+    }
+  }
+  ang_actual = 0;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
