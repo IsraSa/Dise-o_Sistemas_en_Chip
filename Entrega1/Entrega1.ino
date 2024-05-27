@@ -18,7 +18,7 @@ uint16_t sensorValues[5]; // Array para guardar los valores de los sensores
 uint8_t muestras = 350; // Numero de muestras para calibrar
 uint16_t cal_speed = 80; // Velocidad de calibracion
 uint16_t prediccion = 0; // Valor de prediccion
-uint16_t speed = 100; // Velocidad de seguimiento
+uint16_t speed = 70; // Velocidad de seguimiento
 uint16_t posibilidades[3] = {0,0,0}; // Posibilidades
 int follow = 0;
 int opcion = 0;
@@ -51,6 +51,28 @@ void loop() {
   startMode();
 
 }
+
+void calibracion(){
+    // Calibramos al presionar el boton A
+  motors.setSpeeds(cal_speed, -cal_speed); // Mover el robot a la velocidad de calibracion 
+  display.noAutoDisplay(); // Desactivar la actualizacion automatica de la pantalla
+  display.clear(); // Limpiar la pantalla
+  display.print("Calibrando..."); // Mostrar mensaje de calibracion
+  display.display(); // Actualizar la pantalla
+  for (int i = 0; i < muestras/2 ; i++){
+    lineSensors.calibrate(); // Calibrar los sensores de linea
+    delay(25);
+  } 
+ motors.setSpeeds(-cal_speed, cal_speed); // Mover el robot a la velocidad de calibracion 
+  for (int i = muestras/2; i < muestras ; i++){
+    lineSensors.calibrate(); // Calibrar los sensores de linea
+    delay(25);
+  }
+  motors.setSpeeds(0, 0); // Detener el robot
+  select = 1;
+}
+
+
 // Nos muestra si los sensores han encontrado un posible camino
 void camino(){
   char buffer[10];
@@ -60,7 +82,7 @@ void camino(){
   if(opcion == 0){
     lineSensors.readLineBlack(sensorValues); // Leer el valor de prediccion
     //  IZQ
-      if(sensorValues[0] > 100){
+      if(sensorValues[0] > 200){
         display.gotoXY(0,4);
         display.print("IZQ");
         posibilidades[0] = 1;
@@ -76,7 +98,7 @@ void camino(){
         posibilidades[2] = 0;
       }
     // FORW
-      if(sensorValues[2] > 100){
+      if(sensorValues[2] > 200){
         display.gotoXY(10,0);
         display.print("FORW");
         posibilidades[1] = 1;
@@ -86,7 +108,7 @@ void camino(){
   }else{
     lineSensors.readLineWhite(sensorValues); // Leer el valor de prediccion
     //  IZQ
-    if(sensorValues[0] < 400){
+    if(sensorValues[0] < 500){
       display.gotoXY(0,4);
       display.print("IZQ");
       display.gotoXY(0,5);
@@ -96,7 +118,7 @@ void camino(){
       posibilidades[0] = 0;
     }
   // DER
-    if(sensorValues[4] < 400){
+    if(sensorValues[4] < 500){
       display.gotoXY(18,4);
       display.print("DER");
       display.gotoXY(18,5);
@@ -106,7 +128,7 @@ void camino(){
       posibilidades[2] = 0;
     }
   // FORW
-    if(sensorValues[2] < 400){
+    if(sensorValues[2] < 800){
       display.gotoXY(10,0);
       display.print("FORW");
       display.gotoXY(11,1);
@@ -154,26 +176,6 @@ void linea(){
   }
 }
 
-void calibracion(){
-    // Calibramos al presionar el boton A
-  motors.setSpeeds(cal_speed, -cal_speed); // Mover el robot a la velocidad de calibracion 
-  display.noAutoDisplay(); // Desactivar la actualizacion automatica de la pantalla
-  display.clear(); // Limpiar la pantalla
-  display.print("Calibrando..."); // Mostrar mensaje de calibracion
-  display.display(); // Actualizar la pantalla
-  for (int i = 0; i < muestras/2 ; i++){
-    lineSensors.calibrate(); // Calibrar los sensores de linea
-    delay(25);
-  }
- motors.setSpeeds(-cal_speed, cal_speed); // Mover el robot a la velocidad de calibracion 
-  for (int i = muestras/2; i < muestras ; i++){
-    lineSensors.calibrate(); // Calibrar los sensores de linea
-    delay(25);
-  }
-  motors.setSpeeds(0, 0); // Detener el robot
-  select = 1;
-}
-
 void startMode(){
   if (buttonB.isPressed()) {
     buttonB.waitForRelease();
@@ -194,12 +196,12 @@ void startMode(){
     if (prediccion <=2000 and prediccion > 1800){
       motors.setSpeeds(speed , speed);
     }
-    else if (prediccion <=2300 and prediccion > 2000){
+    else if (prediccion <=2500 and prediccion > 2000){
       sum = prediccion - 2000;
       sum = (sum / 50 )*5;
       motors.setSpeeds(speed + sum, speed-sum);
     }
-    else if(prediccion <= 1800 and prediccion > 1500){
+    else if(prediccion <= 1800 and prediccion > 1300){
       sum = 1800 - prediccion;
       sum = (sum / 50 )*5;
       motors.setSpeeds(speed-sum, speed + sum);
@@ -208,8 +210,10 @@ void startMode(){
   else{
     motors.setSpeeds(0,0);
     if(follow == 1 && ajuste ==1){
-      delay(500);
+      delay(1500);
       start_dist();
+      camino();
+      delay(1500);
       ruta();
       ajuste = 0;
     }
@@ -225,7 +229,7 @@ void start_dist(){
   float pos_right = 0;
   encoders.getCountsAndResetLeft();
   encoders.getCountsAndResetRight();
-  while (dist_actual <0.6)
+  while (dist_actual < .8)
   {
     pos_left = float(encoders.getCountsAndResetLeft()); // Se obtiene la posición del motor izquierdo y se reinicia el contador 
     pos_left *= (1/12.0); // Se convierte la posición a vueltas (1 vuelta = 12 pulsos)
@@ -235,7 +239,7 @@ void start_dist(){
     pos_right = float(encoders.getCountsAndResetRight()) * (1/12.0) * (1/29.86) * (10.0531); // Se obtiene la posición del motor derecho y se reinicia el contador
     // Calcular la ditancia actual
     dist_actual = dist_actual + ((pos_right + pos_left)/2);
-    motors.setSpeeds(speed-30, speed-30);
+    motors.setSpeeds(speed-20, speed-20);
   }
   motors.setSpeeds(0, 0);
 }
@@ -244,21 +248,21 @@ void start_dist(){
 
 void ruta(){
   if(posibilidades[0] == 1 && posibilidades[2] == 1){
-    start_ang(80,40,-40);
+    start_ang(75,40,-40);
   }
   else if(posibilidades[2] == 1){
-    start_ang(80,40,-40);
+    start_ang(75,40,-40);
   }
   else if(posibilidades[0] == 1){
     if(posibilidades[1] == 1){
       start_dist();
     }
     else{
-      start_ang(80,-40,40);
+      start_ang(75,-40,40);
     }
   }
-  else if(posibilidades[0] == 0 && posibilidades[1] == 0 posibilidades[2] == 0){
-    start_ang(170,40,-40);
+  else if(posibilidades[0] == 0 && posibilidades[1] == 0 && posibilidades[2] == 0){
+    start_ang(175,40,-40);
   }
 }
 
