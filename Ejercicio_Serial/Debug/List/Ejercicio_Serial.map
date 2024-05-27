@@ -1,0 +1,27 @@
+RAM Allocation [bytes]
+Variable                                                                          Address   Size
+------------------------------------------------------------------------------------------------
+volt                                                                              0x0300       4
+voltDigital                                                                       0x0304       2
+voltEnt                                                                           0x0306       1
+voltDec                                                                           0x0307       1
+
+EEPROM Allocation [bytes]
+Variable                                                                          Address   Size
+------------------------------------------------------------------------------------------------
+
+Register Allocation
+Variable                                                                          Register  Size
+------------------------------------------------------------------------------------------------
+
+FLASH Allocation [words]
+Function                                                                          Address   Size
+------------------------------------------------------------------------------------------------
+read_adc                                                                          0x00060     28
+main                                                                              0x0007C    111
+putchar                                                                           0x000EB     10
+put_usart_G100                                                                    0x000F5     14
+_print_G100                                                                       0x00103    296
+printf                                                                            0x0022B     39
+strlen                                                                            0x00252     12
+strlenf                                                                           0x0025E     13

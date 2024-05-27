@@ -1,0 +1,11 @@
+VERSION:3 SOURCE_TIMESTAMP:58BB5121
+NODE:I LEVEL:0 LINE:8 "C:\cvavreval\inc\mega328p.h"
+NODE:I LEVEL:0 LINE:9 "C:\cvavreval\inc\delay.h"
+NODE:I LEVEL:0 LINE:10 "C:\cvavreval\inc\stdio.h"
+NODE:M LEVEL:0 LINE:13 "ADC_VREF_TYPE"
+NODE:F LEVEL:0 LINE:17 "read_adc(unsigned char adc_input)"
+NODE:V LEVEL:0 LINE:31 "volt -> RAM:????"
+NODE:V LEVEL:0 LINE:33 "voltDigital -> RAM:????"
+NODE:V LEVEL:0 LINE:34 "voltEnt -> RAM:????"
+NODE:V LEVEL:0 LINE:34 "voltDec -> RAM:????"
+NODE:F LEVEL:0 LINE:37 "main(void)"
