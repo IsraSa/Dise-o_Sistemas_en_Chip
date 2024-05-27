@@ -1,0 +1,200 @@
+;PCODE: $00000000 VOL: 0
+	#ifndef __SLEEP_DEFINED__
+;PCODE: $00000001 VOL: 0
+	#define __SLEEP_DEFINED__
+;PCODE: $00000002 VOL: 0
+	.EQU __se_bit=0x01
+;PCODE: $00000003 VOL: 0
+	.EQU __sm_mask=0x0E
+;PCODE: $00000004 VOL: 0
+	.EQU __sm_adc_noise_red=0x02
+;PCODE: $00000005 VOL: 0
+	.EQU __sm_powerdown=0x04
+;PCODE: $00000006 VOL: 0
+	.EQU __sm_powersave=0x06
+;PCODE: $00000007 VOL: 0
+	.EQU __sm_standby=0x0C
+;PCODE: $00000008 VOL: 0
+	.EQU __sm_ext_standby=0x0E
+;PCODE: $00000009 VOL: 0
+	.SET power_ctrl_reg=smcr
+;PCODE: $0000000A VOL: 0
+	#endif
+;PCODE: $0000000B VOL: 0
+;PCODE: $0000000C VOL: 0
+;unsigned int read_adc(unsigned char adc_input)
+; 0000 0012 {
+
+	.CSEG
+;PCODE: $0000000D VOL: 0
+;PCODE: $0000000E VOL: 0
+; 0000 0013 ADMUX=adc_input | ADC_VREF_TYPE;
+;PCODE: $0000000F VOL: 0
+;PCODE: $00000010 VOL: 0
+;	adc_input -> R16
+;PCODE: $00000011 VOL: 0
+;PCODE: $00000012 VOL: 0
+;PCODE: $00000013 VOL: 0
+; 0000 0014 // Delay needed for the stabilization of the ADC input voltage
+; 0000 0015 delay_us(10);
+;PCODE: $00000014 VOL: 0
+; 0000 0016 // Start the AD conversion
+; 0000 0017 ADCSRA|=(1<<ADSC);
+;PCODE: $00000015 VOL: 0
+;PCODE: $00000016 VOL: 0
+;PCODE: $00000017 VOL: 0
+; 0000 0018 // Wait for the AD conversion to complete
+; 0000 0019 while ((ADCSRA & (1<<ADIF))==0);
+;PCODE: $00000018 VOL: 0
+;PCODE: $00000019 VOL: 0
+;PCODE: $0000001A VOL: 0
+;PCODE: $0000001B VOL: 0
+;PCODE: $0000001C VOL: 0
+;PCODE: $0000001D VOL: 0
+; 0000 001A ADCSRA|=(1<<ADIF);
+;PCODE: $0000001E VOL: 0
+;PCODE: $0000001F VOL: 0
+;PCODE: $00000020 VOL: 0
+; 0000 001B return ADCW;
+;PCODE: $00000021 VOL: 0
+;PCODE: $00000022 VOL: 0
+;PCODE: $00000023 VOL: 0
+; 0000 001C }
+;PCODE: $00000024 VOL: 0
+;void main(void)
+; 0000 0026 {
+;PCODE: $00000025 VOL: 0
+; 0000 0027 
+; 0000 0028 // Verifirico apoyandonos del code Wizard, linea de la 141 a la 150
+; 0000 0029 // ADC initialization
+; 0000 002A // ADC Clock frequency: 125.000 kHz
+; 0000 002B // ADC Auto Trigger Source: Software
+; 0000 002C ADCSRA=(1<<ADEN) | (0<<ADSC) | (0<<ADATE) | (0<<ADIF) | (0<<ADIE) | (0<<ADPS2) | (1<<ADPS1) | (1<<ADPS0);
+;PCODE: $00000026 VOL: 0
+;PCODE: $00000027 VOL: 0
+; 0000 002D ADCSRB=(0<<ADTS2) | (0<<ADTS1) | (0<<ADTS0);
+;PCODE: $00000028 VOL: 0
+;PCODE: $00000029 VOL: 0
+; 0000 002E // Digital input buffers on ADC0: On, ADC1: On, ADC2: On, ADC3: On
+; 0000 002F // ADC4: On, ADC5: Off
+; 0000 0030 DIDR0=(1<<ADC5D) | (0<<ADC4D) | (0<<ADC3D) | (0<<ADC2D) | (0<<ADC1D) | (0<<ADC0D);
+;PCODE: $0000002A VOL: 0
+;PCODE: $0000002B VOL: 0
+; 0000 0031 
+; 0000 0032 
+; 0000 0033 // USART initialization
+; 0000 0034 // Communication Parameters: 8 Data, 1 Stop, No Parity
+; 0000 0035 // USART Receiver: On
+; 0000 0036 // USART Transmitter: On
+; 0000 0037 // USART Mode: Asynchronous
+; 0000 0038 // USART Baud Rate: 9600 (Double Speed Mode)
+; 0000 0039 UCSR0A=(0<<RXC0) | (0<<TXC0) | (0<<UDRE0) | (0<<FE0) | (0<<DOR0) | (0<<UPE0) | (1<<U2X0) | (0<<MPCM0);
+;PCODE: $0000002C VOL: 0
+;PCODE: $0000002D VOL: 0
+; 0000 003A UCSR0B=(0<<RXCIE0) | (0<<TXCIE0) | (0<<UDRIE0) | (1<<RXEN0) | (1<<TXEN0) | (0<<UCSZ02) | (0<<RXB80) | (0<<TXB80);
+;PCODE: $0000002E VOL: 0
+;PCODE: $0000002F VOL: 0
+; 0000 003B UCSR0C=(0<<UMSEL01) | (0<<UMSEL00) | (0<<UPM01) | (0<<UPM00) | (0<<USBS0) | (1<<UCSZ01) | (1<<UCSZ00) | (0<<UCPOL0);
+;PCODE: $00000030 VOL: 0
+;PCODE: $00000031 VOL: 0
+; 0000 003C UBRR0H=0x00;
+;PCODE: $00000032 VOL: 0
+;PCODE: $00000033 VOL: 0
+; 0000 003D UBRR0L=0x0C;
+;PCODE: $00000034 VOL: 0
+;PCODE: $00000035 VOL: 0
+; 0000 003E 
+; 0000 003F while (1)
+;PCODE: $00000036 VOL: 0
+; 0000 0040 {
+; 0000 0041 voltDigital = read_adc(5);                          // Read the AD conversion result pin 5
+;PCODE: $00000037 VOL: 0
+;PCODE: $00000038 VOL: 0
+;PCODE: $00000039 VOL: 0
+; 0000 0042 volt = (voltDigital * 100.0) / 1024.0;              // Convert the result to voltage (digital)
+;PCODE: $0000003A VOL: 0
+;PCODE: $0000003B VOL: 0
+;PCODE: $0000003C VOL: 0
+;PCODE: $0000003D VOL: 0
+;PCODE: $0000003E VOL: 0
+;PCODE: $0000003F VOL: 0
+;PCODE: $00000040 VOL: 0
+;PCODE: $00000041 VOL: 0
+; 0000 0043 // Ejemplo 1: 20.56°C   Ejemplo 2: 20.98°C
+; 0000 0044 voltEnt = volt;                                     // Extract the integer part
+;PCODE: $00000042 VOL: 0
+;PCODE: $00000043 VOL: 0
+;PCODE: $00000044 VOL: 0
+;PCODE: $00000045 VOL: 0
+; 0000 0045 // Ejemplo 1: 20        Ejemplo 2: 20
+; 0000 0046 volt = volt - voltEnt;                       // Extract the decimal part
+;PCODE: $00000046 VOL: 0
+;PCODE: $00000047 VOL: 0
+;PCODE: $00000048 VOL: 0
+;PCODE: $00000049 VOL: 0
+;PCODE: $0000004A VOL: 0
+;PCODE: $0000004B VOL: 0
+;PCODE: $0000004C VOL: 0
+; 0000 0047 // Ejemplo 1: 0.56      Ejemplo 2: 0.98
+; 0000 0048 volt = volt * 10;
+;PCODE: $0000004D VOL: 0
+;PCODE: $0000004E VOL: 0
+;PCODE: $0000004F VOL: 0
+;PCODE: $00000050 VOL: 0
+; 0000 0049 // Ejemplo 1: 5.6       Ejemplo 2: 9.8
+; 0000 004A volt = volt + .5;                                  // Round the decimal part
+;PCODE: $00000051 VOL: 0
+;PCODE: $00000052 VOL: 0
+;PCODE: $00000053 VOL: 0
+;PCODE: $00000054 VOL: 0
+; 0000 004B // Ejemplo 1: 6.1         Ejemplo 2: 10.3
+; 0000 004C if (volt<10)
+;PCODE: $00000055 VOL: 0
+;PCODE: $00000056 VOL: 0
+;PCODE: $00000057 VOL: 0
+;PCODE: $00000058 VOL: 0
+; 0000 004D voltDec = volt;                                   // Extract the decimal part
+;PCODE: $00000059 VOL: 0
+;PCODE: $0000005A VOL: 0
+;PCODE: $0000005B VOL: 0
+;PCODE: $0000005C VOL: 0
+; 0000 004E else{
+;PCODE: $0000005D VOL: 0
+;PCODE: $0000005E VOL: 0
+; 0000 004F voltDec = 0;
+;PCODE: $0000005F VOL: 0
+;PCODE: $00000060 VOL: 0
+; 0000 0050 voltEnt++;                                        // Increase the integer part
+;PCODE: $00000061 VOL: 0
+;PCODE: $00000062 VOL: 0
+;PCODE: $00000063 VOL: 0
+; 0000 0051 }
+;PCODE: $00000064 VOL: 0
+; 0000 0052 
+; 0000 0053 //sprintf(Cadena, "%0i.%i %\n\r", voltEnt, voltDec);     // Print the result, 0XDF -> "�"
+; 0000 0054 printf("%i.%i %c \n\r", voltEnt, voltDec, 0x25);
+;PCODE: $00000065 VOL: 0
+;PCODE: $00000066 VOL: 0
+;PCODE: $00000067 VOL: 0
+;PCODE: $00000068 VOL: 0
+;PCODE: $00000069 VOL: 0
+;PCODE: $0000006A VOL: 0
+;PCODE: $0000006B VOL: 0
+;PCODE: $0000006C VOL: 0
+;PCODE: $0000006D VOL: 0
+;PCODE: $0000006E VOL: 0
+;PCODE: $0000006F VOL: 0
+;PCODE: $00000070 VOL: 0
+;PCODE: $00000071 VOL: 0
+;PCODE: $00000072 VOL: 0
+;PCODE: $00000073 VOL: 0
+; 0000 0055 delay_ms(1000);
+;PCODE: $00000074 VOL: 0
+;PCODE: $00000075 VOL: 0
+; 0000 0056 }
+;PCODE: $00000076 VOL: 0
+;PCODE: $00000077 VOL: 0
+; 0000 0057 }
+;PCODE: $00000078 VOL: 0
+;PCODE: $00000079 VOL: 0
+;PCODE: $0000007A VOL: 0
