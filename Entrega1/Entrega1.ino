@@ -25,6 +25,7 @@ int opcion = 0;
 int select = 0;
 int sum = 0;
 int ajuste = 0;
+int stop = 0;
 
 void linea();
 void calibracion();
@@ -34,6 +35,7 @@ void startMode();
 void start_dist();
 void ruta();
 void start_ang(int, int, int);
+void finish();
 
 void setup() {
   display.setLayout21x8(); // Configuracion de la pantalla OLED
@@ -162,11 +164,13 @@ void linea(){
       opcion = 0;
       display.gotoXY(4, 3);
       display.print(".            ");
+      stop = 1000;
     }
     else if(buttonC.isPressed()){
       opcion = 1;
       display.gotoXY(4, 3);
       display.print("            .");
+      stop = 0;
     }
     if(buttonB.isPressed()){
       buttonB.waitForRelease();
@@ -210,16 +214,17 @@ void startMode(){
   else{
     motors.setSpeeds(0,0);
     if(follow == 1 && ajuste ==1){
-      delay(200);                   // Delay a modificar
+      delay(50);                   // Delay a modificar
       //start_dist();
       motors.setSpeeds(30, 30);   // Delay para posibilidades
-      delay(120);
+      delay(100);
       motors.setSpeeds(0, 0);
       camino();
+      finish();
       motors.setSpeeds(30, 30);   // Delay para mejorar vuelta
       delay(200);
       motors.setSpeeds(0, 0);       // Delay a modificar
-      delay(200);
+      delay(50);
       ruta();
       ajuste = 0;
     }
@@ -307,7 +312,28 @@ void start_ang(int angulo, int izq, int der){
   ang_actual = 0;
 }
 
-
+void finish(){
+  display.noAutoDisplay();
+  display.clear();
+  display.gotoXY(0, 0);
+  display.print(sensorValues[0]);
+  display.gotoXY(0, 1);
+  display.print(sensorValues[1]);
+  display.gotoXY(0, 2);
+  display.print(sensorValues[2]);
+  display.gotoXY(0, 3);
+  display.print(sensorValues[3]);
+  display.gotoXY(0, 4);
+  display.print(sensorValues[4]);
+  if(sensorValues[0] <= 50 && sensorValues[1] <= 50 && sensorValues[2] <= 50 && sensorValues[3] <= 50 && sensorValues[4] <= 50){
+    motors.setSpeeds(30, 30);
+    delay(1000);
+    while(1){
+      motors.setSpeeds(200,-200);
+    }
+  }
+  display.display();
+}
 
 
 
