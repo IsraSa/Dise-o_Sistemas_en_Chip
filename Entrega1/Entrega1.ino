@@ -18,7 +18,7 @@ uint16_t sensorValues[5]; // Array para guardar los valores de los sensores
 uint8_t muestras = 350; // Numero de muestras para calibrar
 uint16_t cal_speed = 80; // Velocidad de calibracion
 uint16_t prediccion = 0; // Valor de prediccion
-uint16_t speed = 70; // Velocidad de seguimiento
+uint16_t speed = 100; // Velocidad de seguimiento
 uint16_t posibilidades[3] = {0,0,0}; // Posibilidades
 int follow = 0;
 int opcion = 0;
@@ -110,7 +110,7 @@ void camino(){
   }else{
     lineSensors.readLineWhite(sensorValues); // Leer el valor de prediccion
     //  IZQ
-    if(sensorValues[0] <= 700){
+    if(sensorValues[0] <= 580){
       display.gotoXY(0,4);
       display.print("IZQ");
       display.gotoXY(0,5);
@@ -120,7 +120,7 @@ void camino(){
       posibilidades[0] = 0;
     }
   // DER
-    if(sensorValues[4] <= 700){
+    if(sensorValues[4] <= 580){
       display.gotoXY(18,4);
       display.print("DER");
       display.gotoXY(18,5);
@@ -130,7 +130,7 @@ void camino(){
       posibilidades[2] = 0;
     }
   // FORW
-    if(sensorValues[2] < 800){
+    if(sensorValues[2] < 680){
       display.gotoXY(10,0);
       display.print("FORW");
       display.gotoXY(11,1);
@@ -214,17 +214,17 @@ void startMode(){
   else{
     motors.setSpeeds(0,0);
     if(follow == 1 && ajuste ==1){
-      delay(50);                   // Delay a modificar
+      delay(25);                   // Delay a modificar
       //start_dist();
-      motors.setSpeeds(30, 30);   // Delay para posibilidades
-      delay(100);
-      motors.setSpeeds(0, 0);
+      //motors.setSpeeds(20, 20);   // Delay para posibilidades
+      //delay(5);
+      //motors.setSpeeds(0, 0);
       camino();
       finish();
       motors.setSpeeds(30, 30);   // Delay para mejorar vuelta
-      delay(200);
+      delay(160);
       motors.setSpeeds(0, 0);       // Delay a modificar
-      delay(50);
+      delay(15);
       ruta();
       ajuste = 0;
     }
@@ -259,21 +259,21 @@ void start_dist(){
 
 void ruta(){
   if(posibilidades[0] == 1 && posibilidades[2] == 1){
-    start_ang(80,40,-40);
+    start_ang(80,70,-70);
   }
   else if(posibilidades[2] == 1){
-    start_ang(80,40,-40);
+    start_ang(80,70,-70);
   }
   else if(posibilidades[0] == 1){
     if(posibilidades[1] == 1){
       start_dist();
     }
     else{
-      start_ang(80,-40,40);
+      start_ang(80,-70,70);
     }
   }
   else if(posibilidades[0] == 0 && posibilidades[1] == 0 && posibilidades[2] == 0){
-    start_ang(175,40,-40);
+    start_ang(165,70,-70);
   }
 }
 
