@@ -210,16 +210,16 @@ void startMode(){
   else{
     motors.setSpeeds(0,0);
     if(follow == 1 && ajuste ==1){
-      //delay(50);                   // Delay a modificar
+      delay(200);                   // Delay a modificar
       //start_dist();
       motors.setSpeeds(30, 30);   // Delay para posibilidades
-      delay(80);
+      delay(120);
       motors.setSpeeds(0, 0);
       camino();
       motors.setSpeeds(30, 30);   // Delay para mejorar vuelta
-      delay(115);
+      delay(200);
       motors.setSpeeds(0, 0);       // Delay a modificar
-      //delay(50);
+      delay(200);
       ruta();
       ajuste = 0;
     }
